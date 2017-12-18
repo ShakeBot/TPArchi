@@ -7,10 +7,10 @@
 num_parallel_jobs=8
 
 # Paramètres que l'on cherche à faire varier
-count_sizes=($(seq 1 6))
-array_sizes=(4 6 8 10 12 14 16)
+count_sizes=($(seq 1 3))
+array_sizes=(4 8 12 16)
 
-if test 0 -ne 0 ; then
+if test 1 -ne 0 ; then
    # Nombre de bits du compteur
    for i in ${count_sizes[*]} ; do
       # Taille du tableau
@@ -59,7 +59,8 @@ for i in ${count_sizes[*]} ; do
    echo "colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k']" >> plot_$i.py
    for bench in $benchs ; do
       b=$(echo -n "$bench" | tr '-' '_')
-      echo "plt.plot([4, 6, 8, 10, 12, 14, 16], $b, marker='x', linestyle='--', color=colors[i%7], label='"$b"')" >> plot_$i.py
+
+      echo "plt.plot([$(echo ${array_sizes[*]} | sed -e 's/ /, /g')], $b, marker='x', linestyle='--', color=colors[i%7], label='"$b"')" >> plot_$i.py
       echo "i = i + 1"                                      >> plot_$i.py
    done                                                    
    echo "plt.title('counter size" $i"')"                    >> plot_$i.py
