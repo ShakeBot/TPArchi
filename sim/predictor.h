@@ -23,13 +23,16 @@
 
 class PREDICTOR {
 
- /* Exemple simple : prédicteurs à saturation 
+ /* Exemple simple : prédicteurs à saturation
   *    une seule table indexée par une partie de pc
   *    valeur du compteur comprise entre 0 et countmax
   */
  private:
    uint32_t *table;   // table contenant les compteurs à saturation
    uint32_t pcmask;   // masque pour n'accéder qu'aux bits significatifs de PC
+   uint32_t historic; // historique des décisions prédicteur global
+   uint32_t histsize;
+   uint32_t histmask;
 
  public:
    uint32_t nentries; // nombre d'entrées dans la table

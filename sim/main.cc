@@ -2,7 +2,7 @@
 //  Copyright 2015 Samsung Austin Semiconductor, LLC.                //
 ///////////////////////////////////////////////////////////////////////
 
-//Description : Main file for CBP2016 
+//Description : Main file for CBP2016
 
 #include <assert.h>
 #include <stdlib.h>
@@ -38,10 +38,10 @@ void CheckHeartBeat(UINT64 numIter, UINT64 numMispred)
    UINT64 d10B = 10000000000;
 
 
-//  if(numIter % lineInterval == 0){ //prints line every 30 million branches
-//    printf("\n");
-//    fflush(stdout);
-//  }
+  //  if(numIter % lineInterval == 0){ //prints line every 30 million branches
+  //    printf("\n");
+  //    fflush(stdout);
+  //  }
    if (numIter == d1K) {        //prints MPKI after 100K branches
       printf("  MPKBr_1K         \t : %10.4f", 1000.0 * (double) (numMispred) / (double) (numIter));
       fflush(stdout);
@@ -133,25 +133,25 @@ int main(int argc, char *argv[])
    bt9_reader.header.getFieldValueStr(key, value);
    UINT64 branch_instruction_counter = std::stoull(value, nullptr, 0);
    UINT64 numMispred = 0;
-//ver2    UINT64     numMispred_btbMISS =0;  
-//ver2    UINT64     numMispred_btbANSF =0;  
-//ver2    UINT64     numMispred_btbATSF =0;  
-//ver2    UINT64     numMispred_btbDYN =0;  
+  //ver2    UINT64     numMispred_btbMISS =0;
+  //ver2    UINT64     numMispred_btbANSF =0;
+  //ver2    UINT64     numMispred_btbATSF =0;
+  //ver2    UINT64     numMispred_btbDYN =0;
 
    UINT64 cond_branch_instruction_counter = 0;
-//ver2     UINT64 btb_ansf_cond_branch_instruction_counter=0;
-//ver2     UINT64 btb_atsf_cond_branch_instruction_counter=0;
-//ver2     UINT64 btb_dyn_cond_branch_instruction_counter=0;
-//ver2     UINT64 btb_miss_cond_branch_instruction_counter=0;
+  //ver2     UINT64 btb_ansf_cond_branch_instruction_counter=0;
+  //ver2     UINT64 btb_atsf_cond_branch_instruction_counter=0;
+  //ver2     UINT64 btb_dyn_cond_branch_instruction_counter=0;
+  //ver2     UINT64 btb_miss_cond_branch_instruction_counter=0;
    UINT64 uncond_branch_instruction_counter = 0;
 
-//ver2    ///////////////////////////////////////////////
-//ver2    // model simple branch marking structure
-//ver2    ///////////////////////////////////////////////
-//ver2    std::map<UINT64, UINT32> myBtb; 
-//ver2    map<UINT64, UINT32>::iterator myBtbIterator;
-//ver2
-//ver2    myBtb.clear();
+  //ver2    ///////////////////////////////////////////////
+  //ver2    // model simple branch marking structure
+  //ver2    ///////////////////////////////////////////////
+  //ver2    std::map<UINT64, UINT32> myBtb;
+  //ver2    map<UINT64, UINT32>::iterator myBtbIterator;
+  //ver2
+  //ver2    myBtb.clear();
 
    ///////////////////////////////////////////////
    // read each trace record, simulate until done
@@ -164,30 +164,30 @@ int main(int argc, char *argv[])
    UINT64 numIter = 0;
 
    for (auto it = bt9_reader.begin(); it != bt9_reader.end(); ++it) {
-#if 0
-      CheckHeartBeat(++numIter, numMispred);	//Here numIter will be equal to number of branches read
-#endif
+  #if 0
+        CheckHeartBeat(++numIter, numMispred);	//Here numIter will be equal to number of branches read
+  #endif
 
       try {
          bt9::BrClass br_class = it->getSrcNode()->brClass();
 
-//          bool dirDynamic = (it->getSrcNode()->brObservedTakenCnt() > 0) && (it->getSrcNode()->brObservedNotTakenCnt() > 0); //JD2_2_2016
-//          bool dirNeverTkn = (it->getSrcNode()->brObservedTakenCnt() == 0) && (it->getSrcNode()->brObservedNotTakenCnt() > 0); //JD2_2_2016
+  //          bool dirDynamic = (it->getSrcNode()->brObservedTakenCnt() > 0) && (it->getSrcNode()->brObservedNotTakenCnt() > 0); //JD2_2_2016
+  //          bool dirNeverTkn = (it->getSrcNode()->brObservedTakenCnt() == 0) && (it->getSrcNode()->brObservedNotTakenCnt() > 0); //JD2_2_2016
 
-//JD2_2_2016 break down branch instructions into all possible types
+  //JD2_2_2016 break down branch instructions into all possible types
          opType = OPTYPE_ERROR;
 
          if ((br_class.type == bt9::BrClass::Type::UNKNOWN) && (it->getSrcNode()->brNodeIndex())) {	//only fault if it isn't the first node in the graph (fake branch)
             opType = OPTYPE_ERROR;	//sanity check
          }
-//NOTE unconditional could be part of an IT block that is resolved not-taken
-//          else if (dirNeverTkn && (br_class.conditionality == bt9::BrClass::Conditionality::UNCONDITIONAL)) {
-//            opType = OPTYPE_ERROR; //sanity check
-//          }
-//JD_2_22 There is a bug in the instruction decoder used to generate the traces
-//          else if (dirDynamic && (br_class.conditionality == bt9::BrClass::Conditionality::UNCONDITIONAL)) {
-//            opType = OPTYPE_ERROR; //sanity check
-//          }
+  //NOTE unconditional could be part of an IT block that is resolved not-taken
+  //          else if (dirNeverTkn && (br_class.conditionality == bt9::BrClass::Conditionality::UNCONDITIONAL)) {
+  //            opType = OPTYPE_ERROR; //sanity check
+  //          }
+  //JD_2_22 There is a bug in the instruction decoder used to generate the traces
+  //          else if (dirDynamic && (br_class.conditionality == bt9::BrClass::Conditionality::UNCONDITIONAL)) {
+  //            opType = OPTYPE_ERROR; //sanity check
+  //          }
          else if (br_class.type == bt9::BrClass::Type::RET) {
             if (br_class.conditionality == bt9::BrClass::Conditionality::CONDITIONAL)
                opType = OPTYPE_RET_COND;
@@ -269,7 +269,7 @@ int main(int argc, char *argv[])
 //ver2              //printf("BTB miss ");
 //ver2              myBtb.insert(pair<UINT64, UINT32>(PC, (UINT32)branchTaken)); //on a miss insert with outcome (N->btbANSF, T->btbATSF)
 //ver2              predDir = brpred->GetPrediction(PC, btbANSF, btbATSF, btbDYN);
-//ver2              brpred->UpdatePredictor(PC, opType, branchTaken, predDir, branchTarget, btbANSF, btbATSF, btbDYN); 
+//ver2              brpred->UpdatePredictor(PC, opType, branchTaken, predDir, branchTarget, btbANSF, btbATSF, btbDYN);
 //ver2            }
 //ver2            else {
 //ver2              btbANSF = (myBtbIterator->second == 0);
@@ -278,7 +278,7 @@ int main(int argc, char *argv[])
 //ver2              //printf("BTB hit ANSF: %d ATSF: %d DYN: %d ", btbANSF, btbATSF, btbDYN);
 //ver2
 //ver2              predDir = brpred->GetPrediction(PC, btbANSF, btbATSF, btbDYN);
-//ver2              brpred->UpdatePredictor(PC, opType, branchTaken, predDir, branchTarget, btbANSF, btbATSF, btbDYN); 
+//ver2              brpred->UpdatePredictor(PC, opType, branchTaken, predDir, branchTarget, btbANSF, btbATSF, btbDYN);
 //ver2
 //ver2              if (  (btbANSF && branchTaken)   // only exhibited N until now and we just got a T -> upgrade to dynamic conditional
 //ver2                 || (btbATSF && !branchTaken)  // only exhibited T until now and we just got a N -> upgrade to dynamic conditional
